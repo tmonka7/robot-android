@@ -1,0 +1,4 @@
+#Thu Sep 17 00:11:45 PDT 2026
+base.0=D\:\\falcon\\android\\robot-android\\app\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
