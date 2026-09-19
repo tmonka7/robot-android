@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding">12dp</dimen>
+    <dimen name="gap">10dp</dimen>
+    <dimen name="sidebar_width">78dp</dimen>
+    <dimen name="title_text">18sp</dimen>
+
+    <dimen name="hero_min_height">240dp</dimen>
+
+    <dimen name="dpad_size">180dp</dimen>
+    <dimen name="joystick_size">150dp</dimen>
+    <dimen name="mic_ring_size">190dp</dimen>
+    <dimen name="preview_height">220dp</dimen>
+    <dimen name="robot_preview_height">170dp</dimen>
+
+</resources>

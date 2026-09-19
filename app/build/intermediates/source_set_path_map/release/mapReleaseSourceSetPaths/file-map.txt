@@ -1,8 +1,0 @@
-com.falcon.robot.app-pngs-0 D:\falcon\android\robot-android\app\build\generated\res\pngs\release
-com.falcon.robot.app-resValues-1 D:\falcon\android\robot-android\app\build\generated\res\resValues\release
-com.falcon.robot.app-updated_navigation_xml-2 D:\falcon\android\robot-android\app\build\generated\updated_navigation_xml\release
-com.falcon.robot.app-packageReleaseResources-3 D:\falcon\android\robot-android\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
-com.falcon.robot.app-packageReleaseResources-4 D:\falcon\android\robot-android\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
-com.falcon.robot.app-release-5 D:\falcon\android\robot-android\app\build\intermediates\merged_res\release\mergeReleaseResources
-com.falcon.robot.app-main-6 D:\falcon\android\robot-android\app\src\main\res
-com.falcon.robot.app-release-7 D:\falcon\android\robot-android\app\src\release\res

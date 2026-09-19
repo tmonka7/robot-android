@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Splash: the designer's 1900x1200 artwork (design/splash_screen_1900x1200.psd) shown at full
+  quality, with a live loading bar and version label placed on top at the artwork's own
+  coordinates. Positions and sizes are applied in SplashActivity#layoutOverlay.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF030814">
+
+    <ImageView
+        android:id="@+id/splash_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/app_name"
+        android:scaleType="matrix"
+        android:src="@drawable/splash_background" />
+
+    <TextView
+        android:id="@+id/splash_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:shadowColor="#882F80FF"
+        android:shadowRadius="8"
+        android:singleLine="true"
+        android:text="@string/splash_step_init"
+        android:textColor="#FFD6E2F5" />
+
+    <ProgressBar
+        android:id="@+id/splash_progress"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_splash" />
+
+    <TextView
+        android:id="@+id/splash_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:textColor="#FFD6E2F5" />
+
+    <TextView
+        android:id="@+id/splash_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:textColor="#FF8A97AE" />
+</FrameLayout>

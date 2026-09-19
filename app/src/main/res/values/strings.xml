@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AI Robot Control</string>
+    <string name="splash_step_init">Initializing system…</string>
+    <string name="splash_step_models">Loading AI models…</string>
+    <string name="splash_step_sensors">Starting camera &amp; LiDAR…</string>
+    <string name="splash_step_services">Connecting services…</string>
+    <string name="splash_step_ready">System ready</string>
+    <string name="splash_version">Version %s</string>
+
+    <!-- Sidebar -->
+    <string name="nav_home">Home</string>
+    <string name="nav_robot">Robot Control</string>
+    <string name="nav_remote">Remote Control</string>
+    <string name="nav_face">Face Recognition</string>
+    <string name="nav_voice">Voice Recognition</string>
+    <string name="nav_object">Object Detection</string>
+    <string name="nav_settings">Settings</string>
+    <string name="back">Back</string>
+
+    <!-- Home -->
+    <string name="nav_lidar">LiDAR SLAM</string>
+    <string name="system_online">System Online</string>
+    <string name="robot_offline">Robot Offline · tap to connect</string>
+    <string name="network">Network</string>
+    <string name="network_connected">Connected</string>
+    <string name="network_offline">Offline</string>
+    <string name="quick_status">Quick Status</string>
+    <string name="qs_robot">Robot</string>
+    <string name="qs_camera">Camera</string>
+    <string name="qs_lidar">LiDAR</string>
+    <string name="qs_ai_model">AI Model</string>
+    <string name="value_ready">Ready</string>
+    <string name="value_online">Online</string>
+    <string name="value_loaded">Loaded</string>
+    <string name="value_offline">Offline</string>
+    <string name="date_format">yyyy-MM-dd  EEE</string>
+
+    <!-- LiDAR SLAM -->
+    <string name="lidar_title">LiDAR &amp; SLAM</string>
+    <!-- home card wording, as the artwork had it -->
+    <string name="lidar_card_subtitle">Map, localize and navigate using LiDAR.</string>
+    <string name="lidar_subtitle">Mapping  •  Localization  •  Navigation</string>
+    <string name="lidar_mapping">Mapping</string>
+    <string name="lidar_localization">Localization</string>
+    <string name="lidar_navigation">Navigation</string>
+    <string name="map_quality">Map Quality</string>
+    <string name="slam_status">SLAM Status</string>
+    <string name="state_running">Running</string>
+    <string name="state_paused">Paused</string>
+    <string name="state_stable">Stable</string>
+    <string name="state_ready">Ready</string>
+    <string name="state_active">Active</string>
+    <string name="state_good">Good</string>
+    <string name="view_3d">3D View</string>
+    <string name="view_top">Top View</string>
+    <string name="view_map">Map View</string>
+    <string name="robot_pose">Robot Pose</string>
+    <string name="pose_meters">%.2f m</string>
+    <string name="pose_degrees">%.1f°</string>
+    <string name="yaw">Yaw</string>
+    <string name="lidar_data">LiDAR Data</string>
+    <string name="lidar_range_label">Range: 0.1 - %d m</string>
+    <string name="points">Points</string>
+    <string name="control">Control</string>
+    <string name="start_mapping">Start Mapping</string>
+    <string name="pause_mapping">Pause Mapping</string>
+    <string name="save_map">Save Map</string>
+    <string name="load_map">Load Map</string>
+    <string name="auto_navigation">Auto Navigation</string>
+    <string name="follow_mode">Follow Mode</string>
+    <string name="navigation_target">Navigation Target</string>
+    <string name="set_target">Set Target</string>
+    <string name="rotate_left">Rotate Left</string>
+    <string name="rotate_right">Rotate Right</string>
+    <string name="goal_dock">Charging Dock</string>
+    <string name="goal_entrance">Entrance</string>
+    <string name="goal_kitchen">Kitchen</string>
+    <string name="goal_office">Office</string>
+    <string name="log">Log</string>
+    <string name="clear">Clear</string>
+    <string name="legend_robot">Robot</string>
+    <string name="legend_path">Path</string>
+    <string name="legend_obstacle">Obstacle</string>
+    <string name="legend_wall">Wall</string>
+    <string name="legend_explored">Explored</string>
+    <string name="legend_unexplored">Unexplored</string>
+    <string name="lidar_range">LiDAR Range</string>
+    <string name="meters">%d m</string>
+    <string name="mapping_mode">Mapping Mode</string>
+    <string name="update_rate">Update Rate</string>
+    <string name="apply">Apply</string>
+    <string-array name="lidar_resolutions">
+        <item>High (0.1°)</item>
+        <item>Medium (0.25°)</item>
+        <item>Low (0.5°)</item>
+    </string-array>
+    <string-array name="mapping_modes">
+        <item>RTAB-Map</item>
+        <item>Cartographer</item>
+        <item>GMapping</item>
+    </string-array>
+    <string-array name="update_rates">
+        <item>10 Hz</item>
+        <item>20 Hz</item>
+        <item>5 Hz</item>
+    </string-array>
+    <string-array name="saved_maps">
+        <item>Office_Floor1</item>
+        <item>Warehouse_A</item>
+        <item>Lobby_Demo</item>
+    </string-array>
+    <!-- log messages -->
+    <string name="log_slam_initialized">SLAM initialized successfully</string>
+    <string name="log_map_updated">Map updated. Points: %,d</string>
+    <string name="log_localization_stable">Localization stable</string>
+    <string name="log_target_set">Navigation target set: %1$s (%2$.2f, %3$.2f)</string>
+    <string name="log_robot_moving">Robot moving…</string>
+    <string name="log_obstacle">Obstacle detected (ID: %d)</string>
+    <string name="log_replanning">Path replanning…</string>
+    <string name="log_reached">Reached target</string>
+    <string name="log_mapping_started">Mapping started</string>
+    <string name="log_mapping_paused">Mapping paused</string>
+    <string name="log_stopped">Mapping and navigation stopped</string>
+    <string name="log_map_saved">Map saved (%,d points)</string>
+    <string name="log_map_loaded">Map loaded: %s</string>
+    <string name="log_command">Command: %s</string>
+    <string name="log_setting">%1$s: %2$s</string>
+    <string name="log_settings_applied">Settings applied: %1$d m, %2$s, %3$s, %4$s</string>
+    <string name="log_snapshot">Snapshot saved</string>
+    <string name="log_centered">View centered on robot</string>
+    <string name="log_path_layer">Path layer %s</string>
+    <string name="on">on</string>
+    <string name="off">off</string>
+
+    <!-- Common status -->
+    <string name="status_disconnected">Disconnected · tap to connect</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="status_connected_short">Connected</string>
+    <string name="status_offline_short">Offline</string>
+    <string name="status_listening">Listening…</string>
+    <string name="status_paused">Paused</string>
+    <string name="service_channel">Recognition</string>
+    <string name="service_channel_description">Face, voice and object recognition running in the background</string>
+    <string name="notification_permission_needed">Allow notifications so background recognition can show its status</string>
+    <string name="gamepad_connected">Gamepad connected: %s</string>
+    <string name="not_connected">Connect to the robot first</string>
+    <string name="sent_command">Sent: %s</string>
+    <string name="placeholder_value">--</string>
+    <string name="percent">%d%%</string>
+
+    <!-- Robot Control -->
+    <string name="movement_control">Movement Control</string>
+    <string name="speed">Speed</string>
+    <string name="battery">Battery</string>
+    <string name="mode">Mode</string>
+    <string name="robot_subtitle">Control the robot\'s movement and actions.</string>
+    <string name="robot_status">Robot Status</string>
+    <string name="temperature">Temperature</string>
+    <string name="mode_remote">Remote Control</string>
+    <string name="speed_slow">Slow</string>
+    <string name="speed_normal">Normal</string>
+    <string name="speed_fast">Fast</string>
+    <string name="demo_battery">78%</string>
+    <string name="demo_temperature">36°C</string>
+    <string name="position">Position</string>
+    <string name="position_x">X:  %.2f m</string>
+    <string name="position_y">Y:  %.2f m</string>
+    <string name="position_z">Z:  %.2f m</string>
+    <string name="position_reset">Position reset</string>
+    <string name="camera_view">Camera View</string>
+    <string name="cam_front">Front</string>
+    <string name="cam_rear">Rear</string>
+    <string name="cam_left">Left</string>
+    <string name="cam_right">Right</string>
+    <string name="camera_settings">Camera Settings</string>
+    <string name="brightness">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="saturation">Saturation</string>
+    <string name="resolution">Resolution</string>
+    <string name="fps">FPS</string>
+    <string-array name="camera_resolutions">
+        <item>1080P</item>
+        <item>720P</item>
+        <item>480P</item>
+    </string-array>
+    <string-array name="camera_resolution_sizes">
+        <item>1920 × 1080</item>
+        <item>1280 × 720</item>
+        <item>854 × 480</item>
+    </string-array>
+    <string-array name="camera_fps">
+        <item>30</item>
+        <item>60</item>
+        <item>15</item>
+    </string-array>
+    <string name="feed_info">%1$s  ·  %2$s FPS</string>
+    <string name="act_turn_left">Turn Left</string>
+    <string name="act_turn_right">Turn Right</string>
+    <string name="act_reset">Reset</string>
+    <string name="arm_control">Arm Control</string>
+    <string name="arm_left">Left Arm</string>
+    <string name="arm_right">Right Arm</string>
+    <string name="arm_head">Head</string>
+    <string name="arm_waist">Waist</string>
+    <string name="preset_pose">Preset Pose</string>
+    <string name="pose_t">T-Pose</string>
+    <string name="qa_go_home">Go Home</string>
+    <string name="qa_start_patrol">Start Patrol</string>
+    <string name="qa_stop_patrol">Stop Patrol</string>
+    <string name="qa_follow_me">Follow Me</string>
+    <string name="qa_stop_follow">Stop Following</string>
+    <string name="qa_shutdown">Shutdown</string>
+    <string name="shutdown_confirm">Shut down the robot?</string>
+    <string name="cancel">Cancel</string>
+    <string name="custom_actions">Custom Actions</string>
+    <string name="custom_action">Action %d</string>
+    <string name="robot_tip">Use the virtual joystick or preset buttons to control the robot.</string>
+    <string name="pose_stand">Stand</string>
+    <string name="pose_sit">Sit</string>
+    <string name="pose_wave">Wave</string>
+
+    <!-- Remote Control -->
+    <string name="remote_subtitle">Control the robot via remote device.</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="act_forward">Forward</string>
+    <string name="act_backward">Backward</string>
+    <string name="act_stop">Stop</string>
+    <string name="camera_view_named">Camera View (Robot %s)</string>
+    <string name="online">Online</string>
+    <string name="connection">Connection</string>
+    <string name="position_estimated">Position (Estimated)</string>
+    <string name="map_2d">2D</string>
+    <string name="map_3d">3D</string>
+    <string name="legend_target">Target</string>
+    <string name="control_mode">Control Mode</string>
+    <string name="mode_manual">Manual</string>
+    <string name="mode_autonomous">Autonomous</string>
+    <string name="mode_follow">Follow</string>
+    <string name="mode_path">Path</string>
+    <string name="pose_pick">Pick</string>
+    <string name="pose_point">Point</string>
+    <string name="pose_crouch">Crouch</string>
+    <string name="pose_custom">Custom</string>
+    <string name="camera_recording">Camera &amp; Recording</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="start_video">Start Video</string>
+    <string name="stop_video">Stop Video</string>
+    <string name="record">Record</string>
+    <string name="stop_record">Stop Rec</string>
+    <string name="gallery">Gallery</string>
+    <string name="gallery_empty">No captures yet</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="operation_log">Operation Log</string>
+    <string name="log_robot_connected">Robot connected successfully</string>
+    <string name="log_robot_disconnected">Robot disconnected</string>
+    <string name="log_camera_started">Camera stream started (%s)</string>
+    <string name="log_movement">Movement command: %s</string>
+    <string name="log_speed">Speed set to %d%%</string>
+    <string name="log_pose">Pose: %s</string>
+    <string name="log_arm">Arm control: %s</string>
+    <string name="log_mode">Control mode: %s</string>
+    <string name="log_action">Action: %s</string>
+    <string name="log_photo">Photo captured: %s</string>
+    <string name="log_video_started">Video recording started</string>
+    <string name="log_video_saved">Video saved: %s</string>
+    <string name="log_audio_started">Audio recording started</string>
+    <string name="log_audio_saved">Audio saved: %s</string>
+
+    <!-- Face Recognition -->
+    <string name="face_subtitle">Detect, identify and manage faces</string>
+    <string name="status">Status</string>
+    <string name="time">Time</string>
+    <string name="face_database">Face Database</string>
+    <string name="face_registered">Registered %s</string>
+    <string name="face_removed">Removed %s</string>
+    <string name="live_camera">Live Camera (%s)</string>
+    <string name="recognized">Recognized</string>
+    <string name="unrecognized">Unrecognized</string>
+    <string name="profile">Profile</string>
+    <string name="unknown_person">Unknown</string>
+    <string name="name">Name</string>
+    <string name="id_label">ID</string>
+    <string name="similarity">Similarity</string>
+    <string name="department">Department</string>
+    <string name="position_title">Position</string>
+    <string name="access_time">Access Time</string>
+    <string name="similarity_value">%.1f%%</string>
+    <string name="open_door">Open Door</string>
+    <string name="add_to_log">Add to Log</string>
+    <string name="door_opened">Door opened for %s</string>
+    <string name="added_to_log">Added %s to the log</string>
+    <string name="toggle_active">Mark as active / inactive</string>
+    <string name="remove_from_database">Remove from database</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="search_faces">Search by name or ID…</string>
+    <string name="add_face">Add Face</string>
+    <string name="save">Save</string>
+    <string name="enter_name">Enter a name</string>
+    <string name="snapshot_saved">Snapshot saved</string>
+    <string name="recognition_history">Recognition History</string>
+    <string name="view_all">View All</string>
+    <string name="image">Image</string>
+    <string name="history_line">%1$s   %2$s   %3$s   %4$s</string>
+    <string name="detection_statistics">Detection Statistics</string>
+    <string name="total_faces">Total Faces</string>
+    <string name="todays_records">Today\'s Records</string>
+    <string name="recognitions">Recognitions</string>
+    <string name="face_detection_settings">Face Detection Settings</string>
+    <string name="face_detection">Face Detection</string>
+    <string name="face_recognition_toggle">Face Recognition</string>
+    <string name="recognition_mode">Recognition Mode</string>
+    <string name="similarity_threshold">Similarity Threshold</string>
+    <string name="database">Database</string>
+    <string name="camera">Camera</string>
+    <string-array name="recognition_modes">
+        <item>High Accuracy</item>
+        <item>Balanced</item>
+        <item>Fast</item>
+    </string-array>
+    <!-- Database filter: index 0 all, 1 active only, 2 inactive only -->
+    <string-array name="face_databases">
+        <item>All Users</item>
+        <item>Active Users</item>
+        <item>Inactive Users</item>
+    </string-array>
+    <!-- Camera choice: index 0 front (lens facing the user), 1 back -->
+    <string-array name="camera_sources">
+        <item>Front Camera</item>
+        <item>Back Camera</item>
+    </string-array>
+    <string name="face_label_face">Face</string>
+    <string name="camera_permission_needed">Camera permission is required for face recognition.\nTap to allow.</string>
+    <string name="camera_unavailable">Camera is not available</string>
+    <string name="model_missing">Face detection only: add mobilefacenet.tflite to app/src/main/assets to enable recognition</string>
+    <string name="frame_info">%1$d × %2$d  ·  %3$d ms</string>
+    <string name="snapshot_saved_to">Snapshot saved: %s</string>
+    <string name="snapshot_failed">Could not save snapshot</string>
+    <string name="look_at_camera">Look at the camera…</string>
+    <string name="registration_failed">No face captured. Face the camera and try again.</string>
+    <string name="recognition_unavailable">Face recognition needs mobilefacenet.tflite</string>
+    <string name="empty_database">No faces registered yet.\nTap + to add one.</string>
+    <string name="empty_history">No faces detected yet</string>
+    <string name="waiting_for_face">Waiting for a face…</string>
+
+    <!-- Voice Recognition -->
+    <string name="voice_subtitle">Recognize and process voice commands</string>
+    <string name="stop">Stop</string>
+    <string name="speak_now">Speak now…</string>
+    <string name="microphone">Microphone</string>
+    <string-array name="microphones">
+        <item>Default Device</item>
+        <item>Microphone Array</item>
+        <item>USB Microphone</item>
+        <item>Bluetooth Headset</item>
+    </string-array>
+    <string name="recognition_result">Recognition Result</string>
+    <string name="text">Text</string>
+    <string name="confidence">Confidence</string>
+    <string name="language">Language</string>
+    <string name="command_action">Command Action</string>
+    <string name="execute_label">Execute: </string>
+    <string name="voice_database">Voice Commands</string>
+    <string name="add_voice">Add Phrase</string>
+    <string name="search_by_name">Search commands…</string>
+    <string name="voice_control">Voice Control</string>
+    <string name="vc_command">Voice Command Control</string>
+    <string name="vc_command_sub">Enable voice commands for the robot</string>
+    <string name="vc_wake">Wake Word (Hey Robot)</string>
+    <string name="vc_wake_sub">Activate listening mode with wake word</string>
+    <string name="vc_continuous">Continuous Listening</string>
+    <string name="vc_continuous_sub">Keep listening all the time</string>
+    <string name="vc_noise">Noise Reduction</string>
+    <string name="vc_noise_sub">Improve recognition in noisy environment</string>
+    <string name="wake_word">Wake Word</string>
+    <string name="wake_word_title">Wake Word (%s)</string>
+    <string name="voice_history">Voice Command History</string>
+    <string name="command">Command</string>
+    <string name="result">Result</string>
+    <string name="result_executed">Executed</string>
+    <string name="result_answered">Answered</string>
+    <string name="result_not_sent">Not sent</string>
+    <string name="advanced_settings">Advanced Settings</string>
+    <string name="tab_language">Language</string>
+    <string name="tab_hotword">Hotword</string>
+    <string name="tab_audio">Audio</string>
+    <string name="apply_settings">Apply Settings</string>
+    <string name="time_answer">It is %s</string>
+    <string name="status_processing">Processing…</string>
+    <string name="result_no_match">No match</string>
+    <string name="mic_permission_needed">Microphone permission is required for voice commands</string>
+    <string name="engine_not_built">Speech engine not built: clone whisper.cpp into app/src/main/cpp and rebuild</string>
+    <string name="engine_unavailable">Speech engine library could not be loaded</string>
+    <string name="model_not_found">Put %1$s in %2$s</string>
+    <string name="loading_model_any">Loading model…</string>
+    <string name="loading_model">Loading %s…</string>
+    <string name="model_loaded">%s loaded</string>
+    <string name="model_too_large">Model needs about %1$d MB of memory but only %2$d MB is free — use a smaller one, such as ggml-base.bin</string>
+    <string name="model_load_failed">Could not load %s</string>
+    <string name="mic_error">Microphone error: %s</string>
+    <string name="tap_mic_to_speak">Tap the microphone and speak</string>
+    <string name="quoted">“%1$s”</string>
+    <string name="built_in">Built-in</string>
+    <string name="custom_phrase">Custom</string>
+    <string name="add_phrase">Add Phrase</string>
+    <string name="enter_phrase">Phrase to say</string>
+    <!-- Voice commands the simulator recognizes: parallel arrays (phrase / action / description) -->
+    <!-- Advanced settings rows: label + options, grouped by tab -->
+    <!-- replaced at runtime by the ggml models found on the device -->
+    <string name="adv_recognition_language">Recognition Language</string>
+    <string name="adv_response_language">Response Language</string>
+    <string-array name="adv_language_options">
+        <item>Auto detect</item>
+        <item>English</item>
+        <!-- <item>Korean</item> -->
+        <item>Chinese (Mandarin)</item>
+        <item>Japanese</item>
+        <item>Spanish</item>
+        <item>German</item>
+    </string-array>
+    <!-- whisper language codes, matching adv_language_options -->
+    <string-array name="adv_language_codes">
+        <item>auto</item>
+        <item>en</item>
+        <!-- <item>ko</item> -->
+        <item>zh</item>
+        <item>ja</item>
+        <item>es</item>
+        <item>de</item>
+    </string-array>
+    <string name="adv_auto_detect">Auto Detect Language</string>
+    <string-array name="adv_on_off_options">
+        <item>Off</item>
+        <item>On</item>
+    </string-array>
+    <string name="adv_punctuation">Auto Punctuation</string>
+    <string name="adv_hotword_engine">Wake Word Engine</string>
+    <string-array name="adv_hotword_engine_options">
+        <item>Porcupine</item>
+        <item>Snowboy</item>
+        <item>Built-in</item>
+    </string-array>
+    <string name="adv_sensitivity">Sensitivity</string>
+    <string-array name="adv_sensitivity_options">
+        <item>Medium</item>
+        <item>High</item>
+        <item>Low</item>
+    </string-array>
+    <string name="adv_timeout">Listening Timeout</string>
+    <string-array name="adv_timeout_options">
+        <item>5 s</item>
+        <item>10 s</item>
+        <item>30 s</item>
+    </string-array>
+    <string name="adv_confirm_sound">Confirmation Sound</string>
+    <string-array name="adv_confirm_sound_options">
+        <item>Beep</item>
+        <item>Voice</item>
+        <item>None</item>
+    </string-array>
+    <string name="adv_noise_suppression">Noise Suppression</string>
+    <string-array name="adv_noise_options">
+        <item>Standard</item>
+        <item>Aggressive</item>
+        <item>Off</item>
+    </string-array>
+    <string name="adv_echo_cancel">Echo Cancellation</string>
+    <string name="adv_gain">Input Gain</string>
+    <string-array name="adv_gain_options">
+        <item>Auto</item>
+        <item>Low</item>
+        <item>High</item>
+    </string-array>
+    <string name="adv_output_volume">Output Volume</string>
+    <string-array name="adv_volume_options">
+        <item>70%</item>
+        <item>50%</item>
+        <item>100%</item>
+    </string-array>
+
+    <!-- Object Detection -->
+    <string name="object_subtitle">Detect and recognize objects in real time</string>
+    <string name="detection_result">Detection Result</string>
+    <string name="detection_settings">Detection Settings</string>
+    <string name="detected_objects">Detected Objects</string>
+    <string name="enable_detection">Enable Detection</string>
+    <string name="show_boxes">Show Bounding Boxes</string>
+    <string name="show_labels">Show Labels</string>
+    <string name="show_masks">Segmentation Masks</string>
+    <string name="track_objects">Track Objects</string>
+    <string name="track_label">#%1$d %2$s</string>
+    <string name="total_seen">Objects seen</string>
+    <string name="no_detector">No detector model</string>
+    <string name="detector_missing">Add a YOLO model (.tflite) to app/src/main/assets or the models folder</string>
+    <string name="detector_failed">Could not load %1$s: %2$s</string>
+    <string name="confidence_threshold">Confidence Threshold</string>
+    <string name="total">Total</string>
+    <string name="no_detections">No objects above the threshold</string>
+    <string name="detection_disabled">Detection is off</string>
+    <string name="live">LIVE</string>
+    <string name="inference_info">%1$s  ·  %2$d ms</string>
+    <string name="confidence_value">%.2f</string>
+    <string-array name="confidence_thresholds">
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>0.5</item>
+        <item>0.6</item>
+        <item>0.7</item>
+        <item>0.8</item>
+    </string-array>
+
+    <!-- Settings -->
+    <string name="settings_connection">Robot Connection</string>
+    <string name="camera_resolution">Analysis resolution</string>
+    <string name="camera_settings_note">A larger frame finds smaller objects; a smaller one runs faster. Face recognition and object detection share this camera.</string>
+    <string name="camera_settings_unavailable">Open Face Recognition or Object Detection once, so the camera service is running</string>
+    <string name="settings_camera">Camera Settings</string>
+    <string name="settings_camera_sub">Camera and analysis resolution</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_sub">App display language</string>
+    <string name="language_system">System default</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_chinese" translatable="false">中文</string>
+    <string name="language_japanese" translatable="false">日本語</string>
+
+    <string name="settings_system">System Settings</string>
+    <string name="settings_system_sub">Language / Device / About</string>
+    <string name="about_message">AI Robot Control\nVersion %s</string>
+
+    <!-- Connection dialog -->
+    <string name="wifi">Wi-Fi</string>
+    <string name="ip_address">IP address</string>
+    <string name="port">Port</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="close">Close</string>
+    <string name="invalid_port">Enter a valid port</string>
+    <string name="connected_via">Connected · %s</string>
+    <string name="connection_summary">%1$s · %2$s</string>
+    <!-- Voice command names and descriptions (VoiceCommands); the names are display text only,
+         stored phrases key off the English action name. -->
+    <string name="cmd_stop">Stop</string>
+    <string name="cmd_stop_desc">Robot will stop all movement.</string>
+    <string name="cmd_home">Go Home</string>
+    <string name="cmd_home_desc">Robot will return to the home position.</string>
+    <string name="cmd_forward">Move Forward</string>
+    <string name="cmd_forward_desc">Robot will move forward.</string>
+    <string name="cmd_backward">Move Backward</string>
+    <string name="cmd_backward_desc">Robot will move backward.</string>
+    <string name="cmd_left">Turn Left</string>
+    <string name="cmd_left_desc">Robot will turn left.</string>
+    <string name="cmd_right">Turn Right</string>
+    <string name="cmd_right_desc">Robot will turn right.</string>
+    <string name="cmd_door">Open Door</string>
+    <string name="cmd_door_desc">Robot will open the door.</string>
+    <string name="cmd_mapping">Start Mapping</string>
+    <string name="cmd_mapping_desc">Robot will start building a map.</string>
+    <string name="cmd_stand">Stand</string>
+    <string name="cmd_stand_desc">Robot will stand up.</string>
+    <string name="cmd_sit">Sit</string>
+    <string name="cmd_sit_desc">Robot will sit down.</string>
+    <string name="cmd_wave">Wave</string>
+    <string name="cmd_wave_desc">Robot will wave hello.</string>
+    <string name="cmd_dance">Dance</string>
+    <string name="cmd_dance_desc">Robot will dance.</string>
+    <string name="cmd_follow">Follow Me</string>
+    <string name="cmd_follow_desc">Robot will follow you.</string>
+    <string name="cmd_time">Tell Time</string>
+    <string name="cmd_time_desc">Robot will tell the current time.</string>
+
+
+    <!-- COCO classes, in the order YOLOv8 reports them (see CocoLabels). -->
+    <string-array name="coco_labels">
+        <item>person</item>
+        <item>bicycle</item>
+        <item>car</item>
+        <item>motorcycle</item>
+        <item>airplane</item>
+        <item>bus</item>
+        <item>train</item>
+        <item>truck</item>
+        <item>boat</item>
+        <item>traffic light</item>
+        <item>fire hydrant</item>
+        <item>stop sign</item>
+        <item>parking meter</item>
+        <item>bench</item>
+        <item>bird</item>
+        <item>cat</item>
+        <item>dog</item>
+        <item>horse</item>
+        <item>sheep</item>
+        <item>cow</item>
+        <item>elephant</item>
+        <item>bear</item>
+        <item>zebra</item>
+        <item>giraffe</item>
+        <item>backpack</item>
+        <item>umbrella</item>
+        <item>handbag</item>
+        <item>tie</item>
+        <item>suitcase</item>
+        <item>frisbee</item>
+        <item>skis</item>
+        <item>snowboard</item>
+        <item>sports ball</item>
+        <item>kite</item>
+        <item>baseball bat</item>
+        <item>baseball glove</item>
+        <item>skateboard</item>
+        <item>surfboard</item>
+        <item>tennis racket</item>
+        <item>bottle</item>
+        <item>wine glass</item>
+        <item>cup</item>
+        <item>fork</item>
+        <item>knife</item>
+        <item>spoon</item>
+        <item>bowl</item>
+        <item>banana</item>
+        <item>apple</item>
+        <item>sandwich</item>
+        <item>orange</item>
+        <item>broccoli</item>
+        <item>carrot</item>
+        <item>hot dog</item>
+        <item>pizza</item>
+        <item>donut</item>
+        <item>cake</item>
+        <item>chair</item>
+        <item>couch</item>
+        <item>potted plant</item>
+        <item>bed</item>
+        <item>dining table</item>
+        <item>toilet</item>
+        <item>tv</item>
+        <item>laptop</item>
+        <item>mouse</item>
+        <item>remote</item>
+        <item>keyboard</item>
+        <item>cell phone</item>
+        <item>microwave</item>
+        <item>oven</item>
+        <item>toaster</item>
+        <item>sink</item>
+        <item>refrigerator</item>
+        <item>book</item>
+        <item>clock</item>
+        <item>vase</item>
+        <item>scissors</item>
+        <item>teddy bear</item>
+        <item>hair drier</item>
+        <item>toothbrush</item>
+    </string-array>
+</resources>
