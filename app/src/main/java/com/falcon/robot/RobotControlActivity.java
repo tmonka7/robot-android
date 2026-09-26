@@ -1,24 +1,38 @@
 package com.falcon.robot;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.camera.view.PreviewView;
+import androidx.core.content.ContextCompat;
+
 import com.falcon.robot.widget.CoverImageView;
 import com.falcon.robot.widget.Robot3DView;
 import com.falcon.robot.widget.JoystickView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -37,6 +51,30 @@ public class RobotControlActivity extends BaseActivity {
     /** Distance of one tap on a direction button at 100% speed. */
     private static final float STEP_M = 0.25f;
 
+    /** The robot overlay on the camera feed, in dp: width and height, then the same full screen. */
+    private static final int[] OVERLAY_DP = {150, 118, 255, 200};
+
+    /**
+     * The bar along the bottom in full screen: an icon, and the button on the page it works. The
+     * panels those buttons live in are hidden while a panel is full screen, so the bar stands in
+     * for them; the custom actions are added to it as they are built.
+     */
+    private static final int[][] FULLSCREEN_BAR = {
+            {R.drawable.ic_arrow_up, R.id.move_forward},
+            {R.drawable.ic_arrow_down, R.id.move_backward},
+            {R.drawable.ic_arrow_left, R.id.move_left},
+            {R.drawable.ic_arrow_right, R.id.move_right},
+            {R.drawable.ic_square, R.id.move_stop},
+            {R.drawable.ic_robot, R.id.pose_stand},
+            {R.drawable.ic_pose_sit, R.id.pose_sit},
+            {R.drawable.ic_pose_wave, R.id.pose_wave},
+            {R.drawable.ic_tpose, R.id.pose_tpose},
+            {R.drawable.ic_home, R.id.qa_home},
+            {R.drawable.ic_shield, R.id.qa_patrol},
+            {R.drawable.ic_follow, R.id.qa_follow},
+            {R.drawable.ic_power, R.id.qa_shutdown},
+    };
+
     private final RobotSession session = RobotSession.get();
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -51,18 +89,35 @@ public class RobotControlActivity extends BaseActivity {
     private SeekBar speedSeek;
     private CoverImageView cameraFeed;
     private Robot3DView robot3D;
-    private TextView cameraName;
     private TextView cameraInfo;
     private SeekBar brightness;
     private SeekBar contrast;
     private SeekBar saturation;
     private Spinner resolution;
     private Spinner fps;
-    private TextView[] cameraTabs;
     private TextView[] armParts;
     private TextView[] poses;
     private TextView patrol;
     private TextView follow;
+
+    /** The panel filling the page, or 0 when the page is laid out normally. */
+    private int fullscreenPanel;
+    /** Whether Robot Status is folded down to its title bar, and the height to put back. */
+    private boolean statusCollapsed;
+    private int panelMinHeight;
+
+    /** The robot laid over the camera feed, doing whatever the full figure does. */
+    private Robot3DView feedOverlay;
+    private PreviewView previewView;
+    private boolean permissionAsked;
+
+    private final ActivityResultLauncher<String> cameraPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), granted -> {
+                if (granted) attachPreview();
+            });
+    private TextView[] customActions;
+    private final List<TextView> barButtons = new ArrayList<>();
+    private final List<TextView> barSources = new ArrayList<>();
 
     // simulated odometry
     private float posX;
@@ -100,12 +155,39 @@ public class RobotControlActivity extends BaseActivity {
         setupMovement();
         setupArm();
         setupActions();
+        buildFullscreenBar(); // mirrors buttons the three setups above have just made
+        bindRobotService(null); // for the camera only: this page has no state to listen for
+    }
+
+    @Override
+    protected void onRobotServiceReady(RobotService service) {
+        attachPreview();
+    }
+
+    /**
+     * Puts the tablet's camera in the feed panel, which is what the robot overlay is laid over.
+     * The camera belongs to {@link RobotService}, so face recognition and object detection go on
+     * sharing it; this page only asks for the picture.
+     */
+    private void attachPreview() {
+        RobotService service = getRobotService();
+        if (service == null || previewView == null) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            service.attachPreview(previewView.getSurfaceProvider());
+        } else if (!permissionAsked) {
+            // without it the design artwork stays in the panel, which is still a usable page
+            permissionAsked = true;
+            cameraPermission.launch(Manifest.permission.CAMERA);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (robot3D != null) robot3D.onResume();
+        if (feedOverlay != null) feedOverlay.onResume();
+        attachPreview();
         onConnectionChanged();
         handler.removeCallbacks(odometry);
         handler.post(odometry);
@@ -114,6 +196,11 @@ public class RobotControlActivity extends BaseActivity {
     @Override
     protected void onPause() {
         if (robot3D != null) robot3D.onPause();
+        if (feedOverlay != null) feedOverlay.onPause();
+        RobotService service = getRobotService();
+        if (service != null && previewView != null) {
+            service.detachPreview(previewView.getSurfaceProvider());
+        }
         handler.removeCallbacks(odometry);
         super.onPause();
     }
@@ -128,6 +215,24 @@ public class RobotControlActivity extends BaseActivity {
     protected void onConnectionChanged() {
         refreshRichHeader();
         refreshStatus();
+    }
+
+    /**
+     * Every command goes past here, so the 3D robot acts out whatever was asked for: it walks on
+     * a move, waves on a greeting, raises the arm that was selected. It shows the command rather
+     * than the robot's own state, the way the odometry readout does, so it still demonstrates the
+     * action while nothing is connected; the status panel is what says whether it is.
+     */
+    @Override
+    protected boolean sendCommand(String command) {
+        showOnModel(command);
+        return super.sendCommand(command);
+    }
+
+    /** Both views act out the same command at the same moment, so the head stays with the body. */
+    private void showOnModel(String command) {
+        if (robot3D != null) robot3D.perform(command);
+        if (feedOverlay != null) feedOverlay.perform(command);
     }
 
     // ---- Robot Status ----------------------------------------------------------------------
@@ -152,8 +257,149 @@ public class RobotControlActivity extends BaseActivity {
         // keep the robot figure (right half of the artwork) in view beside the status table
         robot3D = findViewById(R.id.robot_3d);
         robot3D.setModelAsset(ROBOT_MODEL_ASSET); // used when the file is there, ignored otherwise
-        findViewById(R.id.robot_status_panel).setClipToOutline(true);
+
+        View panel = findViewById(R.id.robot_status_panel);
+        panel.setClipToOutline(true);
+        panelMinHeight = panel.getMinimumHeight(); // the height to put back when it is expanded
+
+        int white = color(R.color.text_primary);
+        ImageView full = findViewById(R.id.robot_fullscreen);
+        full.setColorFilter(white, PorterDuff.Mode.SRC_IN);
+        full.setOnClickListener(v -> toggleFullscreen(R.id.robot_status_panel));
+        ImageView collapse = findViewById(R.id.robot_collapse);
+        collapse.setColorFilter(white, PorterDuff.Mode.SRC_IN);
+        collapse.setOnClickListener(v -> toggleStatusPanel());
+
         refreshPosition();
+    }
+
+    /**
+     * Gives the whole page to one panel — the robot or the camera — by hiding the panels beside
+     * and below it, the way the camera pages do. The actions live in the panels that go, so they
+     * come back along the bottom for as long as full screen lasts.
+     */
+    private void toggleFullscreen(int panelId) {
+        fullscreenPanel = fullscreenPanel == panelId ? 0 : panelId;
+        boolean full = fullscreenPanel != 0;
+
+        LinearLayout columns = findViewById(R.id.columns);
+        for (int i = 0; i < columns.getChildCount(); i++) {
+            View child = columns.getChildAt(i);
+            child.setVisibility(!full || child.getId() == fullscreenPanel ? View.VISIBLE : View.GONE);
+        }
+        findViewById(R.id.columns_bottom).setVisibility(full ? View.GONE : View.VISIBLE);
+        findViewById(R.id.fullscreen_actions).setVisibility(full ? View.VISIBLE : View.GONE);
+        if (full) refreshFullscreenBar();
+
+        boolean camera = fullscreenPanel == R.id.camera_panel;
+        // the colour and resolution controls are not what a full-screen feed is for
+        findViewById(R.id.camera_settings_column).setVisibility(camera ? View.GONE : View.VISIBLE);
+        // the overlay is a surface drawn over the window, and a hidden ancestor does not reach it:
+        // without this it would go on drawing the robot over whatever took the panel's place
+        if (feedOverlay != null) {
+            feedOverlay.setVisibility(fullscreenPanel == R.id.robot_status_panel
+                    ? View.GONE : View.VISIBLE);
+        }
+        sizeFeedOverlay(camera);
+
+        setFullscreenIcon(R.id.robot_fullscreen, R.id.robot_status_panel);
+        setFullscreenIcon(R.id.camera_fullscreen, R.id.camera_panel);
+    }
+
+    private void setFullscreenIcon(int buttonId, int panelId) {
+        boolean on = fullscreenPanel == panelId;
+        ImageView button = findViewById(buttonId);
+        button.setImageResource(on ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen);
+        button.setContentDescription(getString(on ? R.string.exit_full_screen : R.string.full_screen));
+    }
+
+    /**
+     * Builds the bottom bar out of the buttons it mirrors, so each action keeps one implementation
+     * and the bar cannot drift from the panels.
+     */
+    private void buildFullscreenBar() {
+        LinearLayout row = findViewById(R.id.fullscreen_action_row);
+        for (int[] entry : FULLSCREEN_BAR) {
+            addFullscreenButton(row, entry[0], findViewById(entry[1]));
+        }
+        for (TextView custom : customActions) {
+            addFullscreenButton(row, R.drawable.ic_settings, custom);
+        }
+    }
+
+    private void addFullscreenButton(LinearLayout row, int icon, final TextView source) {
+        float density = getResources().getDisplayMetrics().density;
+        int pad = Math.round(6 * density);
+
+        TextView button = new TextView(this);
+        button.setText(source.getText());
+        button.setTextColor(color(R.color.text_primary));
+        button.setTextSize(11);
+        button.setGravity(Gravity.CENTER);
+        button.setSingleLine(true);
+        button.setEllipsize(TextUtils.TruncateAt.END);
+        button.setBackgroundResource(R.drawable.bg_control_button);
+        button.setPadding(pad, pad, pad, pad);
+        setIcon(button, icon, 20, color(R.color.text_primary), Gravity.TOP);
+        button.setOnClickListener(v -> {
+            source.performClick();
+            refreshFullscreenBar(); // Patrol and Follow rename themselves when they are toggled
+        });
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                Math.round(80 * density), Math.round(62 * density));
+        if (row.getChildCount() > 0) lp.setMarginStart(pad);
+        row.addView(button, lp);
+        barButtons.add(button);
+        barSources.add(source);
+    }
+
+    private void refreshFullscreenBar() {
+        for (int i = 0; i < barButtons.size(); i++) {
+            barButtons.get(i).setText(barSources.get(i).getText());
+            barButtons.get(i).setActivated(barSources.get(i).isActivated());
+        }
+    }
+
+    /** Folds the panel down to its title bar, and back to the size it was. */
+    private void toggleStatusPanel() {
+        statusCollapsed = !statusCollapsed;
+        if (statusCollapsed && fullscreenPanel == R.id.robot_status_panel) {
+            toggleFullscreen(R.id.robot_status_panel); // nothing left to be full screen with
+        }
+
+        int visibility = statusCollapsed ? View.GONE : View.VISIBLE;
+        robot3D.setVisibility(visibility);
+        findViewById(R.id.robot_status_table).setVisibility(visibility);
+        findViewById(R.id.robot_position).setVisibility(visibility);
+        findViewById(R.id.robot_fullscreen).setVisibility(visibility);
+
+        View panel = findViewById(R.id.robot_status_panel);
+        panel.setMinimumHeight(statusCollapsed ? 0 : panelMinHeight);
+        if (statusCollapsed) {
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) panel.getLayoutParams();
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT; // shrink to the title chip
+            // stacked, the weight is its share of the height, so drop it and let the panel below
+            // have the room; side by side it is the share of the width, which has to stay
+            if (!getResources().getBoolean(R.bool.two_columns)) lp.weight = 0f;
+            panel.setLayoutParams(lp);
+        } else {
+            setupColumns(R.id.columns); // puts the row's own sizes back, wide or stacked
+        }
+
+        ImageView button = findViewById(R.id.robot_collapse);
+        button.setImageResource(statusCollapsed ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_up);
+        button.setContentDescription(getString(statusCollapsed ? R.string.expand : R.string.collapse));
+    }
+
+    /** Back leaves full screen before it leaves the page. */
+    @Override
+    public void onBackPressed() {
+        if (fullscreenPanel != 0) {
+            toggleFullscreen(fullscreenPanel);
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void refreshStatus() {
@@ -186,19 +432,18 @@ public class RobotControlActivity extends BaseActivity {
         cameraFeed = findViewById(R.id.camera_feed);
         cameraFeed.setFocus(0.25f, 0.2f, 0.75f, 1f); // keep the robot in frame
         findViewById(R.id.camera_feed_frame).setClipToOutline(true);
-        cameraName = findViewById(R.id.camera_name);
-        cameraInfo = findViewById(R.id.camera_info);
 
-        cameraTabs = new TextView[] {
-                findViewById(R.id.cam_front), findViewById(R.id.cam_rear),
-                findViewById(R.id.cam_left), findViewById(R.id.cam_right),
-        };
-        for (final TextView tab : cameraTabs) {
-            setIcon(tab, R.drawable.ic_camera, 16, color(R.color.text_primary), Gravity.START);
-            tab.setOnClickListener(v -> selectCamera(tab));
-        }
-        cameraTabs[0].setSelected(true);
-        cameraName.setText(cameraTabs[0].getText());
+        ImageView cameraFull = findViewById(R.id.camera_fullscreen);
+        cameraFull.setColorFilter(color(R.color.text_primary), PorterDuff.Mode.SRC_IN);
+        cameraFull.setOnClickListener(v -> toggleFullscreen(R.id.camera_panel));
+
+        previewView = findViewById(R.id.camera_preview);
+        // a view in the hierarchy rather than a surface of its own: the artwork behind shows
+        // through until frames arrive, and the robot overlay draws on top of it
+        previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
+        previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
+        addFeedOverlay();
+        cameraInfo = findViewById(R.id.camera_info);
 
         brightness = bindCameraSlider(R.id.label_brightness, R.drawable.ic_brightness, R.id.seek_brightness, R.id.value_brightness);
         contrast = bindCameraSlider(R.id.label_contrast, R.drawable.ic_contrast, R.id.seek_contrast, R.id.value_contrast);
@@ -210,10 +455,28 @@ public class RobotControlActivity extends BaseActivity {
         applyImageAdjustments();
     }
 
-    private void selectCamera(TextView tab) {
-        for (TextView t : cameraTabs) t.setSelected(t == tab);
-        cameraName.setText(tab.getText());
-        session.send("CAMERA SELECT " + tab.getText().toString().toUpperCase(Locale.US));
+    /**
+     * Lays the robot over the feed, seen from behind and sitting on the bottom edge, so the panel
+     * reads as the robot's own point of view: the live camera is what is in front of it, and the
+     * head and shoulders in the foreground turn with whatever it is doing.
+     */
+    private void addFeedOverlay() {
+        float density = getResources().getDisplayMetrics().density;
+        feedOverlay = Robot3DView.cameraOverlay(this);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                Math.round(OVERLAY_DP[0] * density), Math.round(OVERLAY_DP[1] * density),
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        ((FrameLayout) findViewById(R.id.camera_feed_frame)).addView(feedOverlay, lp);
+    }
+
+    /** The robot grows with the feed, so it is not lost in a full-screen camera. */
+    private void sizeFeedOverlay(boolean full) {
+        if (feedOverlay == null) return;
+        float density = getResources().getDisplayMetrics().density;
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) feedOverlay.getLayoutParams();
+        lp.width = Math.round(OVERLAY_DP[full ? 2 : 0] * density);
+        lp.height = Math.round(OVERLAY_DP[full ? 3 : 1] * density);
+        feedOverlay.setLayoutParams(lp);
     }
 
     private SeekBar bindCameraSlider(int labelId, int icon, int seekId, int valueId) {
@@ -308,6 +571,7 @@ public class RobotControlActivity extends BaseActivity {
         setIcon(stop, R.drawable.ic_square, 20, white, Gravity.TOP);
         stop.setOnClickListener(v -> {
             // stop is always attempted and never blocked by the connect prompt
+            showOnModel("STOP");
             session.send("STOP");
             setTip(getString(R.string.sent_command, stop.getText()));
         });
@@ -373,6 +637,7 @@ public class RobotControlActivity extends BaseActivity {
         if (qx == 0 && qy == 0) {
             joyX = 0;
             joyY = 0;
+            showOnModel("MOVE STOP");
             session.send("MOVE STOP");
             return;
         }
@@ -482,6 +747,7 @@ public class RobotControlActivity extends BaseActivity {
     private void buildCustomActions() {
         LinearLayout row = findViewById(R.id.custom_actions);
         int gap = Math.round(8 * getResources().getDisplayMetrics().density);
+        customActions = new TextView[4];
         for (int i = 1; i <= 4; i++) {
             final String label = getString(R.string.custom_action, i);
             final int number = i;
@@ -501,6 +767,7 @@ public class RobotControlActivity extends BaseActivity {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
             if (i > 1) lp.setMarginStart(gap);
             row.addView(button, lp);
+            customActions[i - 1] = button; // the full-screen bar mirrors these too
         }
     }
 
